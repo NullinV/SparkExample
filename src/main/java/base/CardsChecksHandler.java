@@ -55,6 +55,13 @@ public class CardsChecksHandler {
                 .argName("checks_file")
                 .required(false)
                 .build());
+
+        options.addOption(Option.builder("m").longOpt("master")
+                .desc("The Spark master URL")
+                .hasArg(true)
+                .argName("master URL")
+                .required(false)
+                .build());
     }
 
     private CommandLine cmdLine;
@@ -80,11 +87,10 @@ public class CardsChecksHandler {
             formatter.printHelp("capp", options, true);
             exit(0);
         }
-
         SparkSession spark = SparkSession
                 .builder()
                 .appName("Cards & checks data handler")
-                .master("local")
+                .master(cmdLine.getOptionValue("master","local"))
                 .enableHiveSupport()
                 .getOrCreate();
 
