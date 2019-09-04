@@ -27,3 +27,4 @@ gradle
 #Spark
 metastore_db
 spark-warehouse
+derby.log
