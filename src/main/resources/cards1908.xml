@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Cards>
+    <Card>
+        <FirstName>Leonid</FirstName>
+        <LastName>Brezhnev</LastName>
+        <Age>102</Age>
+        <DateOfBirthday>1906-12-19</DateOfBirthday>
+        <Profession>Surveyor</Profession>
+        <CardNumber>00004</CardNumber>
+    </Card>
+    <Card>
+        <FirstName>Yuri</FirstName>
+        <LastName>Andropov</LastName>
+        <Age>105</Age>
+        <DateOfBirthday>1914-06-15</DateOfBirthday>
+        <Profession>Mechanic</Profession>
+        <CardNumber>00005</CardNumber>
+    </Card>
+</Cards>

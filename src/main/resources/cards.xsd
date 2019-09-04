@@ -1,0 +1,21 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Cards">
+        <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="Card">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="FirstName"/>
+                            <xs:element type="xs:string" name="LastName"/>
+                            <xs:element type="xs:int" name="Age"/>
+                            <xs:element type="xs:date" name="DateOfBirthday"/>
+                            <xs:element type="xs:string" name="Profession"/>
+                            <xs:element type="xs:string" name="CardNumber"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

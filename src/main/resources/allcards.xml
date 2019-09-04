@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Cards>
+    <Card>
+        <FirstName>Vladimir</FirstName>
+        <LastName>Lenin</LastName>
+        <Age>149</Age>
+        <DateOfBirthday>1870-04-22</DateOfBirthday>
+        <Profession>Lawyer</Profession>
+        <CardNumber>00001</CardNumber>
+    </Card>
+    <Card>
+        <FirstName>Joseph</FirstName>
+        <LastName>Stalin</LastName>
+        <Age>141</Age>
+        <DateOfBirthday>1878-12-06</DateOfBirthday>
+        <Profession>Priest</Profession>
+        <CardNumber>00002</CardNumber>
+    </Card>
+    <Card>
+        <FirstName>Nikita</FirstName>
+        <LastName>Khrushchev</LastName>
+        <Age>125</Age>
+        <DateOfBirthday>1894-04-15</DateOfBirthday>
+        <Profession>Mechanic</Profession>
+        <CardNumber>00003</CardNumber>
+    </Card>
+    <Card>
+        <FirstName>Leonid</FirstName>
+        <LastName>Brezhnev</LastName>
+        <Age>102</Age>
+        <DateOfBirthday>1906-12-19</DateOfBirthday>
+        <Profession>Surveyor</Profession>
+        <CardNumber>00004</CardNumber>
+    </Card>
+    <Card>
+        <FirstName>Yuri</FirstName>
+        <LastName>Andropov</LastName>
+        <Age>105</Age>
+        <DateOfBirthday>1914-06-15</DateOfBirthday>
+        <Profession>Mechanic</Profession>
+        <CardNumber>00005</CardNumber>
+    </Card>
+</Cards>

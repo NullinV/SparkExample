@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sales>
+    <Check>
+        <CardNumber>00001</CardNumber>
+        <Date>2019-07-03</Date>
+        <Products>
+            <Product>
+                <Name>Prod1</Name>
+                <Price>123.45</Price>
+                <Quantity>1</Quantity>
+            </Product>
+        </Products>
+    </Check>
+<Check>
+<CardNumber>00003</CardNumber>
+<Date>2019-07-03</Date>
+<Products>
+    <Product>
+        <Name>Prod1</Name>
+        <Price>123.45</Price>
+        <Quantity>1</Quantity>
+    </Product>
+    <Product>
+        <Name>Prod3</Name>
+        <Price>12</Price>
+        <Quantity>10</Quantity>
+    </Product>
+</Products>
+</Check>
+    <Check>
+        <CardNumber>00001</CardNumber>
+        <Date>2019-08-03</Date>
+        <Products>
+            <Product>
+                <Name>Prod1</Name>
+                <Price>123.45</Price>
+                <Quantity>1</Quantity>
+            </Product>
+        </Products>
+    </Check>
+    <Check>
+        <CardNumber>00002</CardNumber>
+        <Date>2019-08-03</Date>
+        <Products>
+            <Product>
+                <Name>Prod1</Name>
+                <Price>123.45</Price>
+                <Quantity>5</Quantity>
+            </Product>
+        </Products>
+    </Check>
+    <Check>
+        <CardNumber>00003</CardNumber>
+        <Date>2019-08-03</Date>
+        <Products>
+            <Product>
+                <Name>Prod1</Name>
+                <Price>123.45</Price>
+                <Quantity>3</Quantity>
+            </Product>
+            <Product>
+                <Name>Prod3</Name>
+                <Price>12</Price>
+                <Quantity>10</Quantity>
+            </Product>
+        </Products>
+    </Check>
+    <Check>
+        <CardNumber>00001</CardNumber>
+        <Date>2019-09-03</Date>
+        <Products>
+            <Product>
+                <Name>Prod1</Name>
+                <Price>123.45</Price>
+                <Quantity>1</Quantity>
+            </Product>
+        </Products>
+    </Check>
+</Sales>
