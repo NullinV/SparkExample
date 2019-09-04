@@ -23,3 +23,7 @@ src/main/java/Test.java
 gradle
 .gradle
 *gradlew*
+
+#Spark
+metastore_db
+spark-warehouse
