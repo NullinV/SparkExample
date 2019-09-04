@@ -74,7 +74,6 @@ public class CardsChecksHandler {
 
     public void perform(String[] args) {
         cmdLine = parseCommandLine(options, args);
-        String appName = "Cards & checks data handler";
 
         if (!(cmdLine.hasOption("card") || cmdLine.hasOption("check"))) {
             HelpFormatter formatter = new HelpFormatter();
@@ -84,7 +83,7 @@ public class CardsChecksHandler {
 
         SparkSession spark = SparkSession
                 .builder()
-                .appName(appName)
+                .appName("Cards & checks data handler")
                 .master("local")
                 .enableHiveSupport()
                 .getOrCreate();
@@ -92,8 +91,6 @@ public class CardsChecksHandler {
         if (cmdLine.hasOption("database")) dataBase = cmdLine.getOptionValue("d");
         spark.sql("CREATE DATABASE IF NOT EXISTS " + dataBase);
         spark.sql("USE " + dataBase);
-
-        spark.sql("SHOW TABLES").show();
 
         if (cmdLine.hasOption("card")) {
             Dataset<Row> df = spark.read()
@@ -114,7 +111,7 @@ public class CardsChecksHandler {
                     .load(cmdLine.getOptionValue("check")).toDF();
 
             Dataset<Row> exploded = df.withColumn("Product", org.apache.spark.sql.functions.explode(df.col("Products.Product"))).drop("Products");
-            exploded.printSchema();
+
             Dataset<Row> fin = exploded.withColumn("Name", exploded.col("Product.Name"))
                     .withColumn("Price", exploded.col("Product.Price"))
                     .withColumn("Quantity", exploded.col("Product.Quantity"))
@@ -123,17 +120,30 @@ public class CardsChecksHandler {
             spark.sql("DROP TABLE IF EXISTS checks");
             fin.write().format("ORC").saveAsTable("checks");
 
+            spark.sql("DROP TABLE IF EXISTS lastchecks");
+            spark.sql("SELECT DISTINCT CardNumber, " +
+                    "LAST_VALUE(Date) OVER (PARTITION BY CardNumber, Name ORDER BY Date ROWS between UNBOUNDED PRECEDING and UNBOUNDED following) Date," +
+                    "Name, " +
+                    "LAST_VALUE(Price) OVER (PARTITION BY CardNumber, Name  ORDER BY Date ROWS between UNBOUNDED PRECEDING and  UNBOUNDED following) Price," +
+                    "LAST_VALUE(Quantity) OVER (PARTITION BY CardNumber, Name  ORDER BY Date ROWS between UNBOUNDED PRECEDING and UNBOUNDED following) Quantity FROM CHECKS")
+                    .distinct().write().format("ORC").saveAsTable("lastchecks");
         }
-
-        spark.sql("SHOW TABLES").show();
-        spark.sql("select * from cards").show();
-        spark.sql("select * from checks").show();
     }
 
     public static void main(String[] args) {
         CardsChecksHandler handler = new CardsChecksHandler();
         handler.perform(args);
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("Main task")
+                .master("local")
+                .enableHiveSupport()
+                .getOrCreate();
 
+        spark.sql("SHOW TABLES").show();
+        spark.sql("select * from cards").show();
+        spark.sql("select * from checks").show();
+        spark.sql("select * from lastchecks").show();
     }
 }
 
