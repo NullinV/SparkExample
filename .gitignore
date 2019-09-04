@@ -1,0 +1,25 @@
+# MSSMS Project
+.vs
+*.ssmssln
+*.ssmssqlproj
+
+# Intellij
+.idea
+*.iml
+out
+target
+
+# This project specific
+src/main/java/api/base/java/xml/dom/sources/
+src/main/java/Test.java
+*.json
+*.dt
+
+#MS Office
+*.xlsx
+*.docx
+
+#Gradle
+gradle
+.gradle
+*gradlew*
