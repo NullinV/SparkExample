@@ -12,7 +12,7 @@ import static java.lang.System.exit;
 
 public class CardsChecksHandler {
 
-    private static StructType cardSchema = new StructType(new StructField[]{
+    private static StructType cardScheme = new StructType(new StructField[]{
             new StructField("Age", DataTypes.IntegerType, true, Metadata.empty()),
             new StructField("CardNumber", DataTypes.StringType, true, Metadata.empty()),
             new StructField("DateOfBirthday", DataTypes.DateType, true, Metadata.empty()),
@@ -21,7 +21,7 @@ public class CardsChecksHandler {
             new StructField("Profession", DataTypes.StringType, true, Metadata.empty()),
     });
 
-    private static StructType checkSchema = new StructType(new StructField[]{
+    private static StructType checkScheme = new StructType(new StructField[]{
             new StructField("CardNumber", DataTypes.StringType, true, Metadata.empty()),
             new StructField("Date", DataTypes.DateType, true, Metadata.empty()),
             new StructField("Products", new StructType(new StructField[]{new StructField("Product", DataTypes.createArrayType(
@@ -90,7 +90,7 @@ public class CardsChecksHandler {
         SparkSession spark = SparkSession
                 .builder()
                 .appName("Cards & checks data handler")
-                .master(cmdLine.getOptionValue("master","local"))
+                .master(cmdLine.getOptionValue("master", "local"))
                 .enableHiveSupport()
                 .getOrCreate();
 
@@ -102,7 +102,7 @@ public class CardsChecksHandler {
             Dataset<Row> df = spark.read()
                     .format("xml")
                     .option("rowTag", "Card")
-                    .schema(cardSchema)
+                    .schema(cardScheme)
                     .load(cmdLine.getOptionValue("card"));
 
             spark.sql("DROP TABLE IF EXISTS cards");
@@ -113,7 +113,7 @@ public class CardsChecksHandler {
             Dataset<Row> df = spark.read()
                     .format("xml")
                     .option("rowTag", "Check")
-                    .schema(checkSchema)
+                    .schema(checkScheme)
                     .load(cmdLine.getOptionValue("check"));
 
             Dataset<Row> exploded = df.withColumn("Product", org.apache.spark.sql.functions.explode(df.col("Products.Product"))).drop("Products");
@@ -127,6 +127,7 @@ public class CardsChecksHandler {
             fin.write().format("ORC").saveAsTable("checks");
 
             spark.sql("DROP TABLE IF EXISTS lastchecks");
+
             spark.sql("SELECT DISTINCT CardNumber, " +
                     "LAST_VALUE(Date) OVER (PARTITION BY CardNumber, Name ORDER BY Date ROWS between UNBOUNDED PRECEDING and UNBOUNDED following) Date," +
                     "Name, " +
@@ -150,6 +151,38 @@ public class CardsChecksHandler {
         spark.sql("select * from cards").show();
         spark.sql("select * from checks").show();
         spark.sql("select * from lastchecks").show();
+
+        System.out.println("Total sales by profession\n");
+        spark.sql("SELECT Profession, sum(Price*Quantity) pVol from checks join cards on cards.CardNumber = checks.CardNumber group by Profession").show();
+
+        System.out.println("Monthly\n");
+        spark.sql("select sMonth,Profession, sum(vol) mVol from (select concat(year(Date), '-', right(concat('0',month(date)),2)) sMonth, Price*Quantity vol,  Profession from checks join cards on cards.CardNumber = checks.CardNumber) sales group by sMonth,Profession order by sMonth, Profession").show();
+
+        System.out.println("Running total v1 ");
+        spark.sql("SELECT sMonth, " +
+                "       Profession, " +
+                "       mVol, " +
+                "       sum(mVol) " +
+                "           OVER (PARTITION BY Profession ORDER BY sMonth ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) total " +
+                "FROM (SELECT sMonth, " +
+                "             Profession, " +
+                "             sum(vol) mVol" +
+                "      FROM (SELECT YEAR(DATE) * 100 + MONTH(DATE) sMonth, Price * Quantity vol, Profession " +
+                "            FROM checks " +
+                "                   JOIN cards ON cards.CardNumber = checks.CardNumber) sales " +
+                "      GROUP BY sMonth, Profession) mSales " +
+                "ORDER BY sMonth, Profession").show();
+
+        System.out.println("Running total v2 ");
+        spark.sql("SELECT sMonth, " +
+                "       Profession, " +
+                "       sum(sum(Vol)) " +
+                "           OVER (PARTITION BY Profession ORDER BY sMonth ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) total " +
+                "FROM (SELECT YEAR(DATE) * 100 + MONTH(DATE) sMonth, Price * Quantity vol, Profession " +
+                "      FROM checks " +
+                "             JOIN cards ON cards.CardNumber = checks.CardNumber) sales " +
+                "GROUP BY sMonth, Profession " +
+                "ORDER BY sMonth, Profession").show();
     }
 }
 
