@@ -87,6 +87,7 @@ public class CardsChecksHandler {
             formatter.printHelp("capp", options, true);
             exit(0);
         }
+
         SparkSession spark = SparkSession
                 .builder()
                 .appName("Cards & checks data handler")
@@ -133,7 +134,7 @@ public class CardsChecksHandler {
                     "Name, " +
                     "LAST_VALUE(Price) OVER (PARTITION BY CardNumber, Name  ORDER BY Date ROWS between UNBOUNDED PRECEDING and  UNBOUNDED following) Price," +
                     "LAST_VALUE(Quantity) OVER (PARTITION BY CardNumber, Name  ORDER BY Date ROWS between UNBOUNDED PRECEDING and UNBOUNDED following) Quantity FROM CHECKS")
-                    .distinct().write().format("ORC").saveAsTable("lastchecks");
+                    .write().format("ORC").saveAsTable("lastchecks");
         }
     }
 
@@ -147,18 +148,22 @@ public class CardsChecksHandler {
                 .enableHiveSupport()
                 .getOrCreate();
 
+        System.out.println("Tables");
         spark.sql("SHOW TABLES").show();
+        System.out.println("Cards");
         spark.sql("select * from cards").show();
+        System.out.println("All sales");
         spark.sql("select * from checks").show();
+        System.out.println("Last sale for each card-product pair");
         spark.sql("select * from lastchecks").show();
 
-        System.out.println("Total sales by profession\n");
+        System.out.println("Total sales by profession");
         spark.sql("SELECT Profession, sum(Price*Quantity) pVol from checks join cards on cards.CardNumber = checks.CardNumber group by Profession").show();
 
-        System.out.println("Monthly\n");
+        System.out.println("Monthly");
         spark.sql("select sMonth,Profession, sum(vol) mVol from (select concat(year(Date), '-', right(concat('0',month(date)),2)) sMonth, Price*Quantity vol,  Profession from checks join cards on cards.CardNumber = checks.CardNumber) sales group by sMonth,Profession order by sMonth, Profession").show();
 
-        System.out.println("Running total v1 ");
+        System.out.println("Running total v1");
         spark.sql("SELECT sMonth, " +
                 "       Profession, " +
                 "       mVol, " +
@@ -173,7 +178,7 @@ public class CardsChecksHandler {
                 "      GROUP BY sMonth, Profession) mSales " +
                 "ORDER BY sMonth, Profession").show();
 
-        System.out.println("Running total v2 ");
+        System.out.println("Running total v2");
         spark.sql("SELECT sMonth, " +
                 "       Profession, " +
                 "       sum(sum(Vol)) " +
