@@ -103,7 +103,7 @@ public class CardsChecksHandler {
                     .format("xml")
                     .option("rowTag", "Card")
                     .schema(cardSchema)
-                    .load(cmdLine.getOptionValue("card")).toDF();
+                    .load(cmdLine.getOptionValue("card"));
 
             spark.sql("DROP TABLE IF EXISTS cards");
             df.write().format("ORC").saveAsTable("cards");
@@ -114,7 +114,7 @@ public class CardsChecksHandler {
                     .format("xml")
                     .option("rowTag", "Check")
                     .schema(checkSchema)
-                    .load(cmdLine.getOptionValue("check")).toDF();
+                    .load(cmdLine.getOptionValue("check"));
 
             Dataset<Row> exploded = df.withColumn("Product", org.apache.spark.sql.functions.explode(df.col("Products.Product"))).drop("Products");
 
