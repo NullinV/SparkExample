@@ -163,7 +163,7 @@ public class CardsChecksHandler {
         System.out.println("Monthly");
         spark.sql("select sMonth,Profession, sum(vol) mVol from (select concat(year(Date), '-', right(concat('0',month(date)),2)) sMonth, Price*Quantity vol,  Profession from checks join cards on cards.CardNumber = checks.CardNumber) sales group by sMonth,Profession order by sMonth, Profession").show();
 
-        System.out.println("Running total v1");
+        System.out.println("Accumulative total v1");
         spark.sql("SELECT sMonth, " +
                 "       Profession, " +
                 "       mVol, " +
@@ -178,9 +178,10 @@ public class CardsChecksHandler {
                 "      GROUP BY sMonth, Profession) mSales " +
                 "ORDER BY sMonth, Profession").show();
 
-        System.out.println("Running total v2");
+        System.out.println("Accumulative total v2");
         spark.sql("SELECT sMonth, " +
                 "       Profession, " +
+                "       sum(Vol) mVol," +
                 "       sum(sum(Vol)) " +
                 "           OVER (PARTITION BY Profession ORDER BY sMonth ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) total " +
                 "FROM (SELECT YEAR(DATE) * 100 + MONTH(DATE) sMonth, Price * Quantity vol, Profession " +
