@@ -117,15 +117,13 @@ public class CardsChecksHandler {
                     .schema(checkScheme)
                     .load(cmdLine.getOptionValue("check"));
 
-            Dataset<Row> exploded = df.withColumn("Product", org.apache.spark.sql.functions.explode(df.col("Products.Product"))).drop("Products");
-
-            Dataset<Row> fin = exploded.withColumn("Name", exploded.col("Product.Name"))
-                    .withColumn("Price", exploded.col("Product.Price"))
-                    .withColumn("Quantity", exploded.col("Product.Quantity"))
+            Dataset<Row> exploded = df.withColumn("Product", org.apache.spark.sql.functions.explode(df.col("Products.Product")))
+                    .drop("Products")
+                    .select("*", "Product.*")
                     .drop("Product");
 
             spark.sql("DROP TABLE IF EXISTS checks");
-            fin.write().format("ORC").saveAsTable("checks");
+            exploded.write().format("ORC").saveAsTable("checks");
 
             spark.sql("DROP TABLE IF EXISTS lastchecks");
 
