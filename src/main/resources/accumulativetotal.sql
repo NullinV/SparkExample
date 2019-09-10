@@ -22,3 +22,8 @@ FROM (SELECT YEAR(DATE) * 100 + MONTH(DATE) sMonth, Price * Quantity vol, Profes
              JOIN cards ON cards.CardNumber = checks.CardNumber) sales
 GROUP BY sMonth, Profession
 ORDER BY sMonth, Profession
+
+SELECT Profession, SUM(Price * Quantity) pVol
+FROM checks
+       JOIN cards ON cards.CardNumber = checks.CardNumber
+GROUP BY Profession
