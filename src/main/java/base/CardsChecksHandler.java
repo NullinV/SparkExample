@@ -173,7 +173,22 @@ public class CardsChecksHandler {
                 .show();
 
         System.out.println("Monthly");
-        spark.sql("select sMonth,Profession, sum(vol) mVol from (select concat(year(Date), '-', right(concat('0',month(date)),2)) sMonth, Price*Quantity vol,  Profession from checks join cards on cards.CardNumber = checks.CardNumber) sales group by sMonth,Profession order by sMonth, Profession").show();
+        spark.sql("SELECT sMonth, Profession, SUM(vol) mVol  " +
+                "FROM (SELECT CONCAT(YEAR(Date), '-', RIGHT(CONCAT('0', MONTH(date)), 2)) sMonth, Price * Quantity vol, Profession  " +
+                "      FROM checks  " +
+                "             JOIN cards ON cards.CardNumber = checks.CardNumber) sales  " +
+                "GROUP BY sMonth, Profession  " +
+                "ORDER BY sMonth, Profession").show();
+        checks.join(cards, "CardNumber")
+                .select(concat(year(checks.col("Date")), lit("-"), substring(concat(lit("0"), month(checks.col("Date"))), -2, 2))
+                        , cards.col("Profession")
+                        , checks.col("Price").multiply(checks.col("Quantity")))
+                .withColumnRenamed("concat(year(Date), -, substring(concat(0, month(Date)), -2, 2))", "sMonth")
+                .groupBy("sMonth", "Profession")
+                .agg(sum(col("(Price * Quantity)")))
+                .withColumnRenamed("sum((Price * Quantity))", "mVol")
+                .orderBy("sMonth", "Profession")
+                .show();
 
         System.out.println("Accumulative total v1");
         spark.sql("SELECT sMonth, " +
