@@ -5,6 +5,8 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.*;
 
+import static org.apache.spark.sql.functions.*;
+
 import org.apache.commons.cli.*;
 
 import static java.lang.System.exit;
@@ -146,17 +148,29 @@ public class CardsChecksHandler {
                 .enableHiveSupport()
                 .getOrCreate();
 
+        Dataset<Row> cards = spark.table("cards");
+        Dataset<Row> checks = spark.table("checks");
+
         System.out.println("Tables");
         spark.sql("SHOW TABLES").show();
         System.out.println("Cards");
         spark.sql("select * from cards").show();
+        cards.select("*").show();
         System.out.println("All sales");
         spark.sql("select * from checks").show();
         System.out.println("Last sale for each card-product pair");
         spark.sql("select * from lastchecks").show();
 
-        System.out.println("Total sales by profession");
-        spark.sql("SELECT Profession, sum(Price*Quantity) pVol from checks join cards on cards.CardNumber = checks.CardNumber group by Profession").show();
+        System.out.println("Total sales by profession SQL&DataFrame code variants");
+        spark.sql("SELECT Profession, SUM(Price * Quantity) pVol " +
+                "FROM checks " +
+                "       JOIN cards ON cards.CardNumber = checks.CardNumber " +
+                "GROUP BY Profession").show();
+        checks.join(cards, "CardNumber")
+                .groupBy("Profession")
+                .agg(sum(expr("Price*Quantity")), sum(checks.col("Price").multiply(checks.col("Quantity"))))//2 different ways to get aggregate
+                .withColumnRenamed("sum((Price * Quantity))", "pVol")//The name is the same
+                .show();
 
         System.out.println("Monthly");
         spark.sql("select sMonth,Profession, sum(vol) mVol from (select concat(year(Date), '-', right(concat('0',month(date)),2)) sMonth, Price*Quantity vol,  Profession from checks join cards on cards.CardNumber = checks.CardNumber) sales group by sMonth,Profession order by sMonth, Profession").show();
