@@ -1,6 +1,6 @@
 Nested XML handling with Spark.
 
-Monthly volume is calculated by SQL group aggregate function.
+Month volume is calculated by SQL group aggregate function.
 Sql window aggregate function is applied to group aggregate to get monthly accumulative total in the same select statement.
 
         spark.sql("SELECT sMonth, " +
