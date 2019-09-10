@@ -1,0 +1,1 @@
+`Age` INT,`CardNumber` STRING,`DateOfBirthday` DATE,`FirstName` STRING,`LastName` STRING,`Profession` STRING

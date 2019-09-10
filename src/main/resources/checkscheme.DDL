@@ -1,0 +1,1 @@
+`CardNumber` STRING,`Date` DATE,`Products` STRUCT<`Product`: ARRAY<STRUCT<`Name`: STRING, `Price`: DOUBLE, `Quantity`: DOUBLE>>>
